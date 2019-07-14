@@ -1,7 +1,7 @@
 '''Take a set of cards and determine the strongest hand value.
 '''
 
-from deck import card_rankings, card_suits, deck, get_card
+from deck import card_rankings, card_suits, deck
 
 
 hand_values = ('Highcard', 'Pair', 'Two pairs', 'Three of a kind', 'Straight', 'Flush', 
