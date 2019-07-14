@@ -36,6 +36,7 @@ def test_straight_flush(cards):
                 for j in cards:
                     flush_cards.append(j) if j[1] == i else None
                     print(flush_cards)
+    return result
 
             
 
