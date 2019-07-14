@@ -1,7 +1,7 @@
 '''Take a set of cards and determine the strongest hand value.
 '''
 
-from deck import card_rankings, card_suits, deck
+from deck import card_rankings, card_suits, deck, get_card
 
 
 hand_values = ('Highcard', 'Pair', 'Two pairs', 'Three of a kind', 'Straight', 'Flush', 
@@ -26,10 +26,24 @@ def valid_hand(cards):
         return('Valid hand')
 
 
+def test_straight_flush(cards):
+    result = 'n'
+    if test_flush(cards) == 'y':
+        suit_count = count_suits(cards)
+        for i in suit_count:
+            if suit_count[i] >= 5:
+                flush_cards = []
+                for j in cards:
+                    flush_cards.append(j) if j[1] == i else None
+                    print(flush_cards)
+
+            
+
+
 def test_flush(cards):
     result = 'n'
     suit_count = count_suits(cards)
-    if any([suit_count[i] >= 5 for i in cards]):
+    if any([suit_count[i] >= 5 for i in suit_count]):
             result = 'y'
     return result
 
@@ -43,7 +57,21 @@ def count_suits(cards):
 
 def test_straight(cards):
     result = 'n'
-    print([(i[0] + 2, i[1]) for i in list(enumerate(card_rankings))])
+    ranks = card_to_rank(cards)
+    ssranks = sorted(set(ranks), reverse = True)
+    ssranks.append(1) if 14 in ssranks else None #account for A being both high and low
+    if any(ssranks[i] - ssranks[i+4] == 4 for i in range(len(ssranks) - 4)):
+        result = 'y'
     return result
 
-print(test_straight(['Ah', 'Kh', 'Qh', 'Jh', 'Th']))
+
+def card_to_rank(cards):
+    ranks = []
+    for i in cards:
+        ranks.append(card_rankings.index(i[0]) + 2)
+    return ranks
+
+
+test_cards = ['Ac', '3h', '4c', '2d', '5h']
+print(test_cards)
+print(test_straight_flush(test_cards))
