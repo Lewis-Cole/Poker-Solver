@@ -35,11 +35,10 @@ def test_straight_flush(cards):
                 flush_cards = []
                 for j in cards:
                     flush_cards.append(j) if j[1] == i else None
-                    print(flush_cards)
+                if test_straight(flush_cards) == 'y':
+                    result = 'y'
     return result
-
-            
-
+ 
 
 def test_flush(cards):
     result = 'n'
@@ -71,8 +70,3 @@ def card_to_rank(cards):
     for i in cards:
         ranks.append(card_rankings.index(i[0]) + 2)
     return ranks
-
-
-test_cards = ['Ac', '3h', '4c', '2d', '5h']
-print(test_cards)
-print(test_straight_flush(test_cards))
