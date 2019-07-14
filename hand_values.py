@@ -1,47 +1,49 @@
 '''Take a set of cards and determine the strongest hand value.
 '''
 
+from deck import card_rankings, card_suits, deck
+
+
 hand_values = ('Highcard', 'Pair', 'Two pairs', 'Three of a kind', 'Straight', 'Flush', 
                 'Full house', 'Four of a kind', 'Straight flush', 'Royal flush')
 
 def determine_hand_value(cards):
     #test if cards are valid hand and fit criteria
     #give best possible hand from cards
-    print('done')
+    print('')
 
 
-def count_suits(cards):
-    clubs = 0
-    diamonds = 0
-    hearts = 0
-    spades = 0
-    for i in cards:
-        if i[1] == 'c':
-            clubs += 1
-        elif i[1] == 'd':
-            diamonds += 1
-        elif i[1] == 'h':
-            hearts += 1
-        elif i[1] == 's':
-            spades += 1
-    return {'clubs': clubs, 'diamonds': diamonds, 'hearts': hearts, 'spades': spades}
-
+def valid_hand(cards):
+    if type(cards) != list:
+        return('ERROR - Cards should be given as a list')
+    elif any([type(i) != str or len(i) != 2 for i in cards]):
+        return('ERROR - Cards should be strings of length 2')
+    elif any([not(i in deck) for i in cards]):
+        return('ERROR - Cards not from specified deck')
+    elif len(cards) != len(set(cards)):
+        return('ERROR - Duplicate cards')
+    else:
+        return('Valid hand')
 
 
 def test_flush(cards):
-    if len(cards) >= 5:
-        suit_count = count_suits(cards)
-        print(suit_count)
-        for i in suit_count:
-            if suit_count[i] >= 5:
-                return 'y'
-            else:
-                return 'n'
-    else:
-        return 'n'
+    result = 'n'
+    suit_count = count_suits(cards)
+    if any([suit_count[i] >= 5 for i in cards]):
+            result = 'y'
+    return result
 
 
-print('Testing flush!')
-print(test_flush(['As', 'Ks', 'Qs', 'Js', 'Ts']))
-print(test_flush(['Ac', 'Kd', 'Qc', 'Jh', 'Th', '9h']))
-print(test_flush(['Ah', 'Jc', 'Qh', 'Jh', 'Jd']))
+def count_suits(cards):
+    suit_count = {i : 0 for i in card_suits}
+    for i in cards:
+        suit_count[i[1]] += 1
+    return suit_count
+
+
+def test_straight(cards):
+    result = 'n'
+    print([(i[0] + 2, i[1]) for i in list(enumerate(card_rankings))])
+    return result
+
+print(test_straight(['Ah', 'Kh', 'Qh', 'Jh', 'Th']))
