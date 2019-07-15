@@ -1,16 +1,219 @@
 '''Take a set of cards and determine the strongest hand value.
 '''
 
-from deck import card_rankings, card_suits, deck
+from deck import card_rankings, card_suits, deck, get_card
 
 
 hand_values = ('Highcard', 'Pair', 'Two pairs', 'Three of a kind', 'Straight', 'Flush', 
                 'Full house', 'Four of a kind', 'Straight flush', 'Royal flush')
 
 
+def compare_hands(IP_cards, OOP_cards):
+    IP_value = determine_hand_value(IP_cards)
+    OOP_value = determine_hand_value(OOP_cards)
+    IP_rank = hand_values.index(IP_value)
+    OOP_rank = hand_values.index(OOP_value)
+    if IP_rank > OOP_rank:
+        return 'IP wins'
+    elif OOP_rank > IP_rank:
+        return 'OOP wins'
+    elif IP_rank == OOP_rank:
+        return compare_same_value(IP_cards, OOP_cards, IP_value)
+
+
+def compare_same_value(IP_cards, OOP_cards, hand_value):
+    IP_ranks = card_to_rank(IP_cards)
+    OOP_ranks = card_to_rank(OOP_cards)
+    IP_rankcount = card_to_rankcount(IP_cards)
+    OOP_rankcount = card_to_rankcount(OOP_cards)
+    
+    if hand_value == 'Highcard':
+        for i in range(5):
+            if IP_ranks[i] > OOP_ranks[i]:
+                return 'IP wins'
+            elif IP_ranks[i] < OOP_ranks[i]:
+                return 'OOP wins'
+            else: None
+        return 'Split pot'
+
+    if hand_value == 'Pair':
+        IP_pair = [i for (i, j) in IP_rankcount.items() if j == 2][0]
+        OOP_pair = [i for (i, j) in OOP_rankcount.items() if j == 2][0]
+        if IP_pair > OOP_pair:
+            return 'IP wins'
+        elif IP_pair < OOP_pair:
+            return 'OOP wins'
+        else:
+            IP_ranks.remove(IP_pair)
+            IP_ranks.remove(IP_pair)
+            OOP_ranks.remove(OOP_pair)
+            OOP_ranks.remove(OOP_pair)
+            for i in range(3):
+                if IP_ranks[i] > OOP_ranks[i]:
+                    return 'IP wins'
+                elif IP_ranks[i] < OOP_ranks[i]:
+                    return 'OOP wins'
+                else: None
+            return 'Split pot'
+
+    if hand_value == 'Two pairs':
+        IP_pairs = sorted([i for (i, j) in IP_rankcount.items() if j == 2])
+        OOP_pairs = sorted([i for (i, j) in OOP_rankcount.items() if j == 2])
+        for i in range(2):
+            if IP_pairs[i] > OOP_pairs[i]:
+                return 'IP wins'
+            elif IP_pairs[i] < OOP_pairs[i]:
+                return 'OOP wins'
+            else:
+                IP_ranks.remove(IP_pairs[0])
+                IP_ranks.remove(IP_pairs[0])
+                IP_ranks.remove(IP_pairs[1])
+                IP_ranks.remove(IP_pairs[1])
+                OOP_ranks.remove(OOP_pairs[0])
+                OOP_ranks.remove(OOP_pairs[0])
+                OOP_ranks.remove(OOP_pairs[1])
+                OOP_ranks.remove(OOP_pairs[1])
+                if IP_ranks[0] > OOP_ranks[0]:
+                    return 'IP wins'
+                elif IP_ranks[0] < OOP_ranks[0]:
+                    return 'OOP wins'
+                else:
+                    return 'Split pot'
+    
+    if hand_value == 'Three of a kind':
+        IP_three = [i for (i, j) in IP_rankcount.items() if j == 3][0]
+        OOP_three = [i for (i, j) in IP_rankcount.items() if j == 3][0]
+        if IP_three > OOP_three:
+            return 'IP wins'
+        elif IP_three < OOP_three:
+            return 'OOP wins'
+        else:
+            for i in range(3):
+                IP_ranks.remove(IP_three)
+                OOP_ranks.remove(OOP_three)
+            for i in range(2):
+                if IP_ranks[i] > OOP_ranks[i]:
+                    return 'IP wins'
+                elif IP_ranks[i] < OOP_ranks[i]:
+                    return 'OOP wins'
+                else: None
+            return 'Split pot'
+    
+    if hand_value == 'Straight':
+        IP_sranks = sorted(set(IP_ranks), reverse = True)
+        OOP_sranks = sorted(set(OOP_ranks), reverse = True)
+        IP_lead = max([IP_sranks[i] for i in range(len(IP_sranks) - 4) if IP_sranks[i] - IP_sranks[i+4] == 4])
+        OOP_lead = max([OOP_sranks[i] for i in range(len(OOP_sranks) - 4) if OOP_sranks[i] - OOP_sranks[i+4] == 4])
+        if IP_lead > OOP_lead:
+            return 'IP wins'
+        elif IP_lead < OOP_lead:
+            return 'OOP wins'
+        else:
+            return 'Split pot'
+    
+    if hand_value == 'Flush':
+        IP_suit_count = count_suits(IP_cards)
+        for i in IP_suit_count:
+            if IP_suit_count[i] >= 5:
+                IP_flush_cards = []
+                for j in IP_cards:
+                    IP_flush_cards.append(j) if j[1] == i else None
+                IP_flush_ranks = card_to_rank(IP_flush_cards)
+        OOP_suit_count = count_suits(OOP_cards)
+        for i in OOP_suit_count:
+            if OOP_suit_count[i] >= 5:
+                OOP_flush_cards = []
+                for j in OOP_cards:
+                    OOP_flush_cards.append(j) if j[1] == i else None
+                OOP_flush_ranks = card_to_rank(OOP_flush_cards)
+        for i in range(5):
+            if IP_flush_ranks[i] > OOP_flush_ranks[i]:
+                return 'IP wins'
+            elif IP_flush_ranks[i] < OOP_flush_ranks[i]:
+                return 'OOP wins'
+            else: None
+        return 'Split pot'
+
+    if hand_value == 'Full house':
+        IP_house = [i for (i, j) in IP_rankcount.items() if j == 3][0]
+        OOP_house = [i for (i, j) in OOP_rankcount.items() if j == 3][0]
+        if IP_house > OOP_house:
+            return 'IP wins'
+        elif IP_house < OOP_house:
+            return 'OOP wins'
+        else:
+            for i in range(3):
+                IP_ranks.remove(IP_house)
+                OOP_ranks.remove(OOP_house)
+                IP_rankcountnew = card_to_rankcount(IP_cards)
+                OOP_rankcountnew = card_to_rankcount(OOP_cards)
+            IP_fullof = [i for (i, j) in IP_rankcountnew.items() if j >= 2][0]
+            OOP_fullof = [i for (i, j) in OOP_rankcountnew.items() if j >= 2][0]
+            if IP_fullof > OOP_fullof:
+                return 'IP wins'
+            elif IP_fullof < OOP_fullof:
+                return 'OOP wins'
+            else:
+                return 'Split pot'
+
+    if hand_value == 'Four of a kind':
+        IP_four = [i for (i, j) in IP_rankcount.items() if j == 4][0]
+        OOP_four = [i for (i, j) in OOP_rankcount.items() if j == 4][0]
+        if IP_four > OOP_four:
+            return 'IP wins'
+        elif IP_four < OOP_four:
+            return 'OOP wins'
+        else:
+            for i in range (4):
+                IP_ranks.remove(IP_four)
+                OOP_ranks.remove(OOP_four)
+            if IP_ranks[0] > OOP_ranks[0]:
+                return 'IP wins'
+            elif IP_ranks[0] < OOP_ranks[0]:
+                return 'OOP wins'
+            else: None
+        return 'Split pot'
+    
+    if hand_value == 'Straight flush':
+        IP_suit_count = count_suits(IP_cards)
+        for i in IP_suit_count:
+            if IP_suit_count[i] >= 5:
+                IP_flush_cards = []
+                for j in IP_cards:
+                    IP_flush_cards.append(j) if j[1] == i else None
+                if test_straight(IP_flush_cards) == 'Straight':
+                    IP_flush_ranks = card_to_rank(IP_flush_cards)
+                    IP_flush_sranks = sorted(set(IP_flush_ranks), reverse = True)
+                    IP_flush_sranks.append(1) if card_rankings.index('A') + 2 in IP_flush_sranks else None
+                    IP_sflead = max([IP_flush_sranks[i] for i in range(len(IP_flush_sranks) - 4) if IP_flush_sranks[i] - IP_flush_sranks[i+4] == 4])
+        
+        OOP_suit_count = count_suits(OOP_cards)
+        for i in OOP_suit_count:
+            if OOP_suit_count[i] >= 5:
+                OOP_flush_cards = []
+                for j in OOP_cards:
+                    OOP_flush_cards.append(j) if j[1] == i else None
+                if test_straight(OOP_flush_cards) == 'Straight':
+                    OOP_flush_ranks = card_to_rank(OOP_flush_cards)
+                    OOP_flush_sranks = sorted(set(OOP_flush_ranks), reverse = True)
+                    OOP_flush_sranks.append(1) if card_rankings.index('A') + 2 in OOP_flush_sranks else None
+                    OOP_sflead = max([OOP_flush_sranks[i] for i in range(len(OOP_flush_sranks) - 4) if OOP_flush_sranks[i] - OOP_flush_sranks[i+4] == 4])
+        
+        if IP_sflead > OOP_sflead:
+            return 'IP wins'
+        elif IP_sflead < OOP_sflead:
+            return 'OOP wins'
+        else:
+            return 'Split pot'
+
+    if hand_value == 'Royal flush':
+        return 'Split pot'
+
+
 def determine_hand_value(cards):
     if valid_hand(cards) != 'Valid hand':
-        return valid_hand(cards)
+        print(valid_hand(cards))
+        exit()
 
     repcardvalue = test_repeatrankhands(cards)
     if test_straightflush(cards) != 'n':
@@ -53,6 +256,7 @@ def test_straightflush(cards):
                     result = 'Straight flush'
                     flush_ranks = card_to_rank(flush_cards)
                     sflush_ranks = sorted(flush_ranks, reverse = True)
+                    sflush_ranks.append(1) if card_rankings.index('A') + 2 in sflush_ranks else None
                     if sflush_ranks[4] == 10:   #if member 4 is 10 then only higher cards in slots 0-3 must be A,K,Q,J
                         result = 'Royal flush'
     return result
