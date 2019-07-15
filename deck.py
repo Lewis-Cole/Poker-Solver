@@ -19,10 +19,10 @@ def make_deck():
         for s in card_suits:
             yield r + s
 
-deck = list(make_deck())
+full_deck = list(make_deck())
 
 #draw a certain number of cards from deck
-def get_card(count):
+def get_card(deck, count):
     random.shuffle(deck)
     for i in range(count):
         yield deck[i]

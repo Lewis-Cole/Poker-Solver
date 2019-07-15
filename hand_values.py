@@ -1,7 +1,7 @@
-'''Take a set of cards and determine the strongest hand value.
+'''Take two sets of cards and determine which wins or split pot.
 '''
 
-from deck import card_rankings, card_suits, deck
+from deck import card_rankings, card_suits, full_deck
 
 
 hand_values = ('Highcard', 'Pair', 'Two pairs', 'Three of a kind', 'Straight', 'Flush', 
@@ -57,8 +57,8 @@ def compare_same_value(IP_cards, OOP_cards, hand_value):
             return 'Split pot'
 
     if hand_value == 'Two pairs':
-        IP_pairs = sorted([i for (i, j) in IP_rankcount.items() if j == 2])
-        OOP_pairs = sorted([i for (i, j) in OOP_rankcount.items() if j == 2])
+        IP_pairs = sorted([i for (i, j) in IP_rankcount.items() if j == 2], reverse = True)
+        OOP_pairs = sorted([i for (i, j) in OOP_rankcount.items() if j == 2], reverse = True)
         for i in range(2):
             if IP_pairs[i] > OOP_pairs[i]:
                 return 'IP wins'
@@ -82,7 +82,7 @@ def compare_same_value(IP_cards, OOP_cards, hand_value):
     
     if hand_value == 'Three of a kind':
         IP_three = [i for (i, j) in IP_rankcount.items() if j == 3][0]
-        OOP_three = [i for (i, j) in IP_rankcount.items() if j == 3][0]
+        OOP_three = [i for (i, j) in OOP_rankcount.items() if j == 3][0]
         if IP_three > OOP_three:
             return 'IP wins'
         elif IP_three < OOP_three:
@@ -101,7 +101,9 @@ def compare_same_value(IP_cards, OOP_cards, hand_value):
     
     if hand_value == 'Straight':
         IP_sranks = sorted(set(IP_ranks), reverse = True)
+        IP_sranks.append(1) if card_rankings.index('A') + 2 in IP_sranks else None
         OOP_sranks = sorted(set(OOP_ranks), reverse = True)
+        OOP_sranks.append(1) if card_rankings.index('A') + 2 in OOP_sranks else None
         IP_lead = max([IP_sranks[i] for i in range(len(IP_sranks) - 4) if IP_sranks[i] - IP_sranks[i+4] == 4])
         OOP_lead = max([OOP_sranks[i] for i in range(len(OOP_sranks) - 4) if OOP_sranks[i] - OOP_sranks[i+4] == 4])
         if IP_lead > OOP_lead:
@@ -235,7 +237,7 @@ def valid_hand(cards):
         return ('ERROR - Cards should be given as a list')
     elif any([type(i) != str or len(i) != 2 for i in cards]):
         return ('ERROR - Cards should be strings of length 2')
-    elif any([not(j in deck) for j in cards]):
+    elif any([not(j in full_deck) for j in cards]):
         return ('ERROR - Cards not from specified deck')
     elif len(cards) != len(set(cards)):
         return ('ERROR - Duplicate cards')
@@ -322,3 +324,4 @@ def count_suits(cards):
     for i in cards:
         suit_count[i[1]] += 1
     return suit_count
+
