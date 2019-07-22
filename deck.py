@@ -3,12 +3,6 @@
 
 import random
 
-#define features of a card
-class Card:
-    def __init__(self, rank, suit):
-        self.rank = rank
-        self.suit = suit
-
 #set types of cards in play
 card_rankings = ('2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A')
 card_suits = ('c', 'd', 'h', 's')
