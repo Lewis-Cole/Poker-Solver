@@ -64,13 +64,12 @@ class Hand:
         self.royal = False
         for index1 in range(len(self.suit_counts)):
             if self.suit_counts[index1] >= 5:
-                flush_ranks = []
+                self.flush_ranks = []
                 for (rank_index, suit_index) in self.sorted_indices:
-                    flush_ranks.append(rank_index) if suit_index == index1 else None
-                flush_ranks.append(-1) if card_ranks.index('A') in flush_ranks else None
-                flush_ranks_set = sorted(set(flush_ranks), reverse = True)
-                self.royal = True if flush_ranks_set[4] == 8 else False
-                if any(flush_ranks_set[index2] - flush_ranks_set[index2 + 4] == 4 for index2 in range(len(flush_ranks_set) - 4)):
+                    self.flush_ranks.append(rank_index) if suit_index == index1 else None
+                self.flush_ranks.append(-1) if card_ranks.index('A') in self.flush_ranks else None
+                self.royal = True if self.flush_ranks[4] == 8 else False
+                if any(self.flush_ranks[index2] - self.flush_ranks[index2 + 4] == 4 for index2 in range(len(self.flush_ranks) - 4)):
                     return True
         return False
     
