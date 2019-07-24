@@ -18,14 +18,11 @@ def compare_hands(IP_hand, OOP_hand):
 
 
 def compare_same_value(IP_hand, OOP_hand, hand_value):
-    IP_highcards = sorted([rank for rank, count in enumerate(IP_hand.rank_counts) if count == 1], reverse = True)
-    OOP_highcards = sorted([rank for rank, count in enumerate(OOP_hand.rank_counts) if count == 1], reverse = True)
-
     if hand_value == 'Highcard':
-        for i in range(5):
-            if IP_highcards[i] > OOP_highcards[i]:
+        for index in range(5):
+            if IP_hand.ranks[index] > OOP_hand.ranks[index]:
                 return 'IP wins'
-            elif IP_highcards[i] < OOP_highcards[i]:
+            elif IP_hand.ranks[index] < OOP_hand.ranks[index]:
                 return 'OOP wins'
             else: None
         return 'Split pot'
@@ -38,6 +35,8 @@ def compare_same_value(IP_hand, OOP_hand, hand_value):
         elif IP_pair < OOP_pair:
             return 'OOP wins'
         else:
+            IP_highcards = sorted([rank for rank, _ in enumerate(IP_hand.rank_counts) if rank != IP_pair], reverse = True)
+            OOP_highcards = sorted([rank for rank, _ in enumerate(OOP_hand.rank_counts) if rank != OOP_pair], reverse = True)
             for i in range(3):
                 if IP_highcards[i] > OOP_highcards[i]:
                     return 'IP wins'
@@ -55,6 +54,8 @@ def compare_same_value(IP_hand, OOP_hand, hand_value):
             elif IP_pairs[i] < OOP_pairs[i]:
                 return 'OOP wins'
             else:
+                IP_highcards = sorted([rank for rank, _ in enumerate(IP_hand.rank_counts) if not(rank in IP_pairs)], reverse = True)
+                OOP_highcards = sorted([rank for rank, _ in enumerate(OOP_hand.rank_counts) if not(rank in OOP_pairs)], reverse = True)
                 if IP_highcards[0] > OOP_highcards[0]:
                     return 'IP wins'
                 elif IP_highcards[0] < OOP_highcards[0]:
@@ -70,6 +71,8 @@ def compare_same_value(IP_hand, OOP_hand, hand_value):
         elif IP_three < OOP_three:
             return 'OOP wins'
         else:
+            IP_highcards = sorted([rank for rank, _ in enumerate(IP_hand.rank_counts) if rank != IP_three], reverse = True)
+            OOP_highcards = sorted([rank for rank, _ in enumerate(OOP_hand.rank_counts) if rank != OOP_three], reverse = True)
             for i in range(2):
                 if IP_highcards[i] > OOP_highcards[i]:
                     return 'IP wins'
@@ -127,12 +130,15 @@ def compare_same_value(IP_hand, OOP_hand, hand_value):
             return 'IP wins'
         elif IP_four < OOP_four:
             return 'OOP wins'
-        elif IP_highcards[0] > OOP_highcards[0]:
-            return 'IP wins'
-        elif IP_highcards[0] < OOP_highcards[0]:
-            return 'OOP wins'
         else:
-            return 'Split pot'
+            IP_highcards = sorted([rank for rank, _ in enumerate(IP_hand.rank_counts) if rank != IP_four], reverse = True)
+            OOP_highcards = sorted([rank for rank, _ in enumerate(OOP_hand.rank_counts) if rank != OOP_four], reverse = True)
+            if IP_highcards[0] > OOP_highcards[0]:
+                return 'IP wins'
+            elif IP_highcards[0] < OOP_highcards[0]:
+                return 'OOP wins'
+            else:
+                return 'Split pot'
     
     if hand_value == 'Straight flush':
         IP_sflead = max([IP_hand.flush_ranks[rank] for rank in range(len(IP_hand.flush_ranks) - 4) if IP_hand.flush_ranks[rank] - IP_hand.flush_ranks[rank+4] == 4])
