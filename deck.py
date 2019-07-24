@@ -1,23 +1,30 @@
-'''Create and manage the deck and cards.
-'''
-
+from card import Card
 import random
 
-#set types of cards in play
-card_rankings = ('2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A')
-card_suits = ('c', 'd', 'h', 's')
+class Deck:
 
-#generate deck from specifications
-def make_deck():
-    for r in card_rankings:
-        for s in card_suits:
-            yield r + s
+    def __init__(self, card_ranks, card_suits):
+        self.card_ranks = card_ranks
+        self.card_suits = card_suits
+        self.fullcards = list(Deck.make_deck(self))
+        self.cards = []
+        for card in self.fullcards:
+            self.cards.append(card)
 
-full_deck = list(make_deck())
-
-#draw a certain number of cards from deck
-def get_card(deck, count):
-    random.shuffle(deck)
-    for i in range(count):
-        yield deck[i]
-
+    def make_deck(self):
+        for rank in self.card_ranks:
+            for suit in self.card_suits:
+                yield Card(rank, suit)
+    
+    def remove_dead_cards(self, dead_cards):
+        cards_in_deck = []
+        for card1 in dead_cards:
+            card_in_deck = [card2 for card2 in self.fullcards if card1.rank == card2.rank and card1.suit == card2.suit]
+            cards_in_deck.append(card_in_deck)
+        for card in cards_in_deck:
+            self.cards.remove(card)
+    
+    def get_cards(self, number):
+        random.shuffle(self.cards)
+        for index in range(number):
+            yield self.cards[index]
