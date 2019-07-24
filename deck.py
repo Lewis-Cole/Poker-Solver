@@ -20,7 +20,7 @@ class Deck:
         cards_in_deck = []
         for card1 in dead_cards:
             card_in_deck = [card2 for card2 in self.fullcards if card1.rank == card2.rank and card1.suit == card2.suit]
-            cards_in_deck.append(card_in_deck)
+            cards_in_deck.append(card_in_deck[0])
         for card in cards_in_deck:
             self.cards.remove(card)
     
