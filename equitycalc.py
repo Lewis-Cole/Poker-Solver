@@ -30,5 +30,3 @@ def calculate_equity(IP_holding, OOP_holding, board):
         print('IP equity = ' + str(IP_EQ) + '%')
         print('OOP equity = ' + str(OOP_EQ) + '%')
     return (IP_EQ, OOP_EQ)
-
-calculate_equity([Card('2', 's'), Card('K', 's')],[Card('8', 'd'), Card('7', 'h')],[])
