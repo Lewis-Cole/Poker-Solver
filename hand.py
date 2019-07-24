@@ -47,7 +47,7 @@ class Hand:
             self.rcc[index] += 1
     
     def test_flush(self):
-        if any(self.suit_counts[index] >= 5 for index in self.suit_counts):
+        if any(count >= 5 for count in self.suit_counts):
             return True
         else:
             return False
@@ -106,9 +106,9 @@ class Hand:
     def determine_value(self):
         sf_test = Hand.test_straightflush(self)
         if self.royal:
-            self.value = 'Royal Flush'
+            self.value = 'Royal flush'
         elif sf_test:
-            self.value = 'Straight Flush'
+            self.value = 'Straight flush'
         elif Hand.test_fourofakind(self):
             self.value = 'Four of a kind'
         elif Hand.test_fullhouse(self):
