@@ -10,10 +10,13 @@ class Hand:
             raise ValueError('Invalid hand input.')
 
     def validate_hand(self):
+        number_of_cards = len(self.cards)
+        for number1 in range(number_of_cards - 1):
+            for number2 in range(number1 + 1, number_of_cards):
+                if self.cards[number1].rank == self.cards[number2].rank and self.cards[number1].suit == self.cards[number2].suit:
+                    return False
         if type(self.cards) != list:
             return False
-        #elif len(self.indices) != len(set(self.indices)):
-            #return False
         else:
             for card in self.cards:
                 if not(Card.validate_card(card)):
