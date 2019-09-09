@@ -455,7 +455,7 @@ class Hand:
         self.pairs = []
         for rank in self.rank_count:
             if self.rank_count[rank] >= 2:
-                self.pairs.append(rank)
+                self.pairs.append(Rank(rank))
         if len(self.pairs) >= 1:
             self.pair = True
             return True
