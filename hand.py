@@ -418,7 +418,7 @@ class Hand:
             self.fours = []
             for rank in self.rank_count:
                 if self.rank_count[rank] >= 4:
-                    self.fours.append(rank)
+                    self.fours.append(Rank(rank))
             if len(self.fours) >= 1:
                 return True
         return False
@@ -435,7 +435,7 @@ class Hand:
             self.threes = []
             for rank in self.rank_count:
                 if self.rank_count[rank] >= 3:
-                    self.threes.append(rank)
+                    self.threes.append(Rank(rank))
             if len(self.threes) >= 1:
                 self.threeofakind = True
                 return True
