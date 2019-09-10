@@ -51,7 +51,6 @@ def enumerate_all(IP_holding, OOP_holding, board):
             IP_hand = Hand(IP_holding + board + [card])
             OOP_hand = Hand(OOP_holding + board + [card])
 
-
             if IP_hand > OOP_hand:
                 IP_wins += 1
             elif IP_hand < OOP_hand:
@@ -78,7 +77,7 @@ def enumerate_all(IP_holding, OOP_holding, board):
                     elif IP_hand == OOP_hand:
                         IP_wins += 0.5
                         OOP_wins += 0.5
-                        
+
         IP_EQ = round(100 * IP_wins / (IP_wins + OOP_wins), 2)
         OOP_EQ = round(100 * OOP_wins / (IP_wins + OOP_wins), 2)
         return (IP_EQ, OOP_EQ)
