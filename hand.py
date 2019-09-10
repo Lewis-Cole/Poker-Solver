@@ -368,10 +368,10 @@ class Hand:
                 return True
             for index in range(len(self.flush_ranks) - 4):
                 if ranks.index(self.flush_ranks[index].value) - ranks.index(self.flush_ranks[index + 4].value) == 4:
-                    self.sf_lead = self.flush_ranks[index].value
+                    self.sf_lead = Rank(self.flush_ranks[index].value)
                     return True
             if Rank('A') in self.flush_ranks and self.flush_ranks[len(self.flush_ranks) - 4] == Rank('5'):
-                self.sf_lead = '5'
+                self.sf_lead = Rank('5')
                 return True
         return False
 
@@ -398,11 +398,11 @@ class Hand:
         for index in range(len(card_ranks_set) - 4):
             if ranks.index(card_ranks_set[index].value) - ranks.index(card_ranks_set[index + 4].value) == 4:
                 self.straight = True
-                self.straight_lead = card_ranks_set[index].value
+                self.straight_lead = Rank(card_ranks_set[index].value)
                 return True
         if Rank('A') in card_ranks_set and card_ranks_set[len(card_ranks_set) - 4] == Rank('5'):
             self.straight = True
-            self.straight_lead = '5'
+            self.straight_lead = Rank('5')
             return True
         return False
 
@@ -419,6 +419,7 @@ class Hand:
             for rank in self.rank_count:
                 if self.rank_count[rank] >= 4:
                     self.fours.append(Rank(rank))
+                    self.fours.sort(reverse = True)
             if len(self.fours) >= 1:
                 return True
         return False
@@ -436,6 +437,7 @@ class Hand:
             for rank in self.rank_count:
                 if self.rank_count[rank] >= 3:
                     self.threes.append(Rank(rank))
+                    self.threes.sort(reverse = True)
             if len(self.threes) >= 1:
                 self.threeofakind = True
                 return True
@@ -456,6 +458,7 @@ class Hand:
         for rank in self.rank_count:
             if self.rank_count[rank] >= 2:
                 self.pairs.append(Rank(rank))
+        self.pairs.sort(reverse = True)
         if len(self.pairs) >= 1:
             self.pair = True
             return True
