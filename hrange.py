@@ -8,5 +8,4 @@ class HRange:
     def validate_hrange(self):
         if type(self.holdings) != list:
             return False
-
         return True
