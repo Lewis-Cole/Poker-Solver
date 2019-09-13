@@ -1,26 +1,26 @@
+# ------------------------------
+#   Manages the Card class
+# ------------------------------
+
+# import Rank and Suit classes
 from rank import Rank
 from suit import Suit
 
-def create_card(cardstring):
-    rank = Rank(cardstring[0])
-    suit = Suit(cardstring[1])
-    card = Card(rank, suit)
-    return card
-
+# create and specify the class
 class Card:
-    
+
     def __init__(self, rank, suit):
         self.rank = rank
         self.suit = suit
         if not(self.validate_card()):
-            raise ValueError('Invalid card input')
-    
+            raise ValueError('ERROR: Invalid card input.')
+
     def validate_card(self):
         return isinstance(self.rank, Rank) and isinstance(self.suit, Suit)
     
     def __repr__(self):
         return self.rank.__repr__() + self.suit.__repr__()
-
+    
     def __eq__(self, other):
         if isinstance(other, self.__class__):
             return self.rank == other.rank and self.suit == other.suit
@@ -31,7 +31,7 @@ class Card:
         if result == NotImplemented:
             return result
         return not result
-
+    
     def __lt__(self, other):
         if isinstance(other, self.__class__):
             if self.rank == other.rank:
@@ -48,6 +48,13 @@ class Card:
                 return self.suit > other.suit
             return self.rank > other.rank
         return NotImplemented
-    
+
     def __ge__(self, other):
         return self.__gt__(other) or self.__eq__(other)
+
+
+# easy to use function for testing
+def createcard(cardstring):
+    rank = Rank(cardstring[0])
+    suit = Suit(cardstring[1])
+    return Card(rank, suit)

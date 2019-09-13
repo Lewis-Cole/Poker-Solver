@@ -1,473 +1,553 @@
-from rank import Rank, ranks
-from suit import Suit, suits
+# ------------------------------
+#   Manages the Hand class
+# ------------------------------
+
+# import hand values, etc.
+from rules import hand_values_data
 from card import Card
+from rank import ranks
+from suit import suits
 
-values = ('Highcard', 'Pair', 'Two pairs', 'Three of a kind', 'Straight', 'Flush', 
-            'Full house', 'Four of a kind', 'Straight flush', 'Royal flush')
-
+# create and specify the class
 class Hand:
 
     def __init__(self, cards):
         self.cards = cards
         if not(self.validate_hand()):
-            raise ValueError('Invalid hand input')
+            raise ValueError('ERROR: Invalid hand input.')
+        
         self.cards.sort(reverse = True)
         self.value = self.determine_value()
 
     def validate_hand(self):
-        if type(self.cards) != list:
-            return False
-        for card in self.cards:
-            if not(isinstance(card, Card)):
-                return False
-        num_cards = len(self.cards)
-        for index in range(num_cards - 1):
-            if self.cards[index] in self.cards[index + 1: num_cards]:
-                return False
-        return True
+        return not any(not(isinstance(card, Card)) for card in self.cards)
     
     def __repr__(self):
         return str(self.cards)
     
+    # overwriting comparison methods
     def __eq__(self, other):
-        if isinstance(other, self.__class__):
-            if self.value != other.value:
-                return False
+        if not(isinstance(other, self.__class__)):
+            return NotImplemented
+        
+        if self.value != other.value:
+            return False
+        
+        if self.value == 'Royal flush':
+            return True
+        
+        if self.value == 'Straight flush':
+            return self.sf_lead == other.sf_lead
+        
+        if self.value == 'Four of a kind':
+            if self.quads[0] == other.quads[0]:
 
-            if self.value == 'Royal flush':
-                return True
+                def gen_qu_highranks(given_object):
+                    for card in given_object.cards:
+                        if card.rank != given_object.quads[0]:
+                            yield card.rank
+                
+                s_hr = list(gen_qu_highranks(self))
+                o_hr = list(gen_qu_highranks(other))
 
-            if self.value == 'Straight flush':
-                return self.sf_lead == other.sf_lead
+                return s_hr[0] == o_hr[0]
+            
+            return False
+        
+        if self.value == 'Full house':
+            if self.trips[0] == other.trips[0]:
+                
+                def get_fullof(given_object):
+                    if len(given_object.trips) == 2:
+                        return given_object.trips[1]
+                    return given_object.pairs[0]
+                
+                s_fullof = get_fullof(self)
+                o_fullof = get_fullof(other)
 
-            if self.value == 'Four of a kind':
-                if self.fours[0] == other.fours[0]:
-                    A_highcards = []
-                    for card in self.cards:
-                        if card.rank != self.fours[0]:
-                            A_highcards.append(card.rank)
-                    B_highcards =[]
-                    for card in other.cards:
-                        if card.rank != other.fours[0]:
-                            B_highcards.append(card.rank)
-                    if A_highcards[0] == B_highcards[0]:
-                        return True
-                return False
+                return s_fullof == o_fullof
+                        
+            return False
+        
+        if self.value == 'Flush':
+            for index in range(5):
+                if self.fcards[index].rank != other.fcards[index].rank:
+                    return False
+            
+            return True
+        
+        if self.value == 'Straight':
+            return self.straight_lead == other.straight_lead
+        
+        if self.value == 'Three of a kind':
+            if self.trips[0] == other.trips[0]:
 
-            if self.value == 'Full house':
-                if self.threes[0] == other.threes[0]:
-                    if len(self.threes) == 2:
-                        A_fullof = self.threes[1]
-                    else:
-                        A_fullof = self.pairs[0]
-                    if len(other.threes) == 2:
-                        B_fullof = other.threes[1]
-                    else:
-                        B_fullof = other.pairs[0]
-                    if A_fullof == B_fullof:
-                        return True
-                return False
+                def gen_tr_highranks(given_object):
+                    for card in given_object.cards:
+                        if card.rank != given_object.trips[0]:
+                            yield card.rank
+                
+                s_hr = list(gen_tr_highranks(self))
+                o_hr = list(gen_tr_highranks(other))
 
-            if self.value == 'Flush':
-                for index in range(5):
-                    if self.flush_ranks[index] != other.flush_ranks[index]:
+                for index in range(2):
+                    if s_hr[index] != o_hr[index]:
                         return False
+                
                 return True
+            
+            return False
+        
+        if self.value == 'Two pairs':
+            if self.pairs[0] == other.pairs[0] and self.pairs[1] == other.pairs[1]:
+                
+                def gen_tw_highranks(given_object):
+                    for card in given_object.cards:
+                        if card.rank != given_object.pairs[0] and card.rank != given_object.pairs[1]:
+                            yield card.rank
+                
+                s_hr = list(gen_tw_highranks(self))
+                o_hr = list(gen_tw_highranks(other))
 
-            if self.value == 'Straight':
-                return self.straight_lead == other.straight_lead
+                return s_hr[0] == o_hr[0]
+            
+            return False
+        
+        if self.value == 'Pair':
+            if self.pairs[0] == other.pairs[0]:
 
-            if self.value == 'Three of a kind':
-                if self.threes[0] == other.threes[0]:
-                    A_highcards = []
-                    for card in self.cards:
-                        if card.rank != self.threes[0]:
-                            A_highcards.append(card.rank)
-                    B_highcards =[]
-                    for card in other.cards:
-                        if card.rank != other.threes[0]:
-                            B_highcards.append(card.rank)
-                    for index in range(2):
-                        if A_highcards[index] != B_highcards[index]:
-                            return False
-                    return True
-                return False
-
-            if self.value == 'Two pairs':
-                if self.pairs[0] == other.pairs[0] and self.pairs[1] == other.pairs[1]:
-                    A_highcards = []
-                    for card in self.cards:
-                        if card.rank != self.pairs[0] and card.rank != self.pairs[1]:
-                            A_highcards.append(card.rank)
-                    B_highcards =[]
-                    for card in other.cards:
-                        if card.rank != other.pairs[0] and card.rank != other.pairs[1]:
-                            B_highcards.append(card.rank)
-                    if A_highcards[0] == B_highcards[0]:
-                        return True
-                return False
-
-            if self.value == 'Pair':
-                if self.pairs[0] == other.pairs[0]:
-                    A_highcards = []
-                    for card in self.cards:
-                        if card.rank != self.pairs[0]:
-                            A_highcards.append(card.rank)
-                    B_highcards =[]
-                    for card in other.cards:
-                        if card.rank != other.pairs[0]:
-                            B_highcards.append(card.rank)
-                    for index in range(3):
-                        if A_highcards[index] != B_highcards[index]:
-                            return False
-                    return True
-                return False
-
-            if self.value == 'Highcard':
-                for index in range(5):
-                    if self.cards[index].rank != other.cards[index].rank:
+                def gen_pa_highranks(given_object):
+                    for card in given_object.cards:
+                        if card.rank != given_object.pairs[0]:
+                            yield card.rank
+                
+                s_hr = list(gen_pa_highranks(self))
+                o_hr = list(gen_pa_highranks(other))
+                   
+                for index in range(3):
+                    if s_hr[index] != o_hr[index]:
                         return False
+                
                 return True
-        return NotImplemented
-
+            
+            return False
+        
+        if self.value == 'Highcard':
+            for index in range(5):
+                if self.cards[index].rank != other.cards[index].rank:
+                    return False
+            
+            return True
+    
     def __ne__(self, other):
         result = self.__eq__(other)
         if result == NotImplemented:
             return result
         return not result
-
+    
     def __lt__(self, other):
-        result = self.__eq__(other)
-        if result == NotImplemented:
-            return result        
-        if result:
-            return False
+        if not(isinstance(other, self.__class__)):
+            return NotImplemented
+        
+        # listed in descending order hence reversed comparison
         if self.value != other.value:
-            return values.index(self.value) < values.index(other.value)
-
+            return hand_values_data.index(self.value) > hand_values_data.index(other.value) 
+        
+        if self.value == 'Royal flush':
+            return False
+        
         if self.value == 'Straight flush':
             return self.sf_lead < other.sf_lead
-
+        
         if self.value == 'Four of a kind':
-            if self.fours[0] != other.fours[0]:
-                return self.fours[0] < other.fours[0]
-            A_highcards = []
-            for card in self.cards:
-                if card.rank != self.fours[0]:
-                    A_highcards.append(card.rank)
-            B_highcards =[]
-            for card in other.cards:
-                if card.rank != other.fours[0]:
-                    B_highcards.append(card.rank)
-            return A_highcards[0] < B_highcards[0]
+            if self.quads[0] == other.quads[0]:
 
+                def gen_qu_highranks(given_object):
+                    for card in given_object.cards:
+                        if card.rank != given_object.quads[0]:
+                            yield card.rank
+                
+                s_hr = list(gen_qu_highranks(self))
+                o_hr = list(gen_qu_highranks(other))
+
+                return s_hr[0] < o_hr[0]
+            
+            return self.quads[0] < other.quads[0]
+        
         if self.value == 'Full house':
-            if self.threes[0] != other.threes[0]:
-                return self.threes[0] < other.threes[0]
-            if len(self.threes) == 2:
-                A_fullof = self.threes[1]
-            else:
-                A_fullof = self.pairs[0]
-            if len(other.threes) == 2:
-                B_fullof = other.threes[1]
-            else:
-                B_fullof = other.pairs[0]
-            return A_fullof < B_fullof
+            if self.trips[0] == other.trips[0]:
+                
+                def get_fullof(given_object):
+                    if len(given_object.trips) == 2:
+                        return given_object.trips[1]
+                    return given_object.pairs[0]
+                
+                s_fullof = get_fullof(self)
+                o_fullof = get_fullof(other)
 
+                return s_fullof < o_fullof
+                        
+            return self.trips[0] < other.trips[0]
+        
         if self.value == 'Flush':
             for index in range(5):
-                if self.flush_ranks[index] != other.flush_ranks[index]:
-                    return self.flush_ranks[index] < other.flush_ranks[index]
-
+                if self.fcards[index].rank != other.fcards[index].rank:
+                    return self.fcards[index].rank < other.fcards[index].rank
+            
+            return False
+        
         if self.value == 'Straight':
             return self.straight_lead < other.straight_lead
-
+        
         if self.value == 'Three of a kind':
-            if self.threes[0] != other.threes[0]:
-                return self.threes[0] < other.threes[0]
-            A_highcards = []
-            for card in self.cards:
-                if card.rank != self.threes[0]:
-                    A_highcards.append(card.rank)
-            B_highcards =[]
-            for card in other.cards:
-                if card.rank != other.threes[0]:
-                    B_highcards.append(card.rank)
-            for index in range(2):
-                if A_highcards[index] != B_highcards[index]:
-                    return A_highcards[index] < B_highcards[index]
+            if self.trips[0] == other.trips[0]:
 
+                def gen_tr_highranks(given_object):
+                    for card in given_object.cards:
+                        if card.rank != given_object.trips[0]:
+                            yield card.rank
+                
+                s_hr = list(gen_tr_highranks(self))
+                o_hr = list(gen_tr_highranks(other))
+
+                for index in range(2):
+                    if s_hr[index] != o_hr[index]:
+                        return s_hr[index] < o_hr[index]
+                
+                return False
+            
+            return self.trips[0] < other.trips[0]
+        
         if self.value == 'Two pairs':
-            if self.pairs[0] != other.pairs[0]:
-                return self.pairs[0] < other.pairs[0]
-            if self.pairs[1] != other.pairs[1]:
+            if self.pairs[0] == other.pairs[0]:
+                if self.pairs[1] == other.pairs[1]:
+                
+                    def gen_tw_highranks(given_object):
+                        for card in given_object.cards:
+                            if card.rank != given_object.pairs[0] and card.rank != given_object.pairs[1]:
+                                yield card.rank
+                    
+                    s_hr = list(gen_tw_highranks(self))
+                    o_hr = list(gen_tw_highranks(other))
+
+                    return s_hr[0] < o_hr[0]
+            
                 return self.pairs[1] < other.pairs[1]
-            A_highcards = []
-            for card in self.cards:
-                if card.rank != self.pairs[0] and card.rank != self.pairs[1]:
-                    A_highcards.append(card.rank)
-            B_highcards =[]
-            for card in other.cards:
-                if card.rank != other.pairs[0] and card.rank != other.pairs[1]:
-                    B_highcards.append(card.rank)
-            return A_highcards[0] < B_highcards[0]
 
+            return self.pairs[0] < other.pairs[0]
+        
         if self.value == 'Pair':
-            if self.pairs[0] != other.pairs[0]:
-                return self.pairs[0] < other.pairs[0]
-            A_highcards = []
-            for card in self.cards:
-                if card.rank != self.pairs[0]:
-                    A_highcards.append(card.rank)
-            B_highcards =[]
-            for card in other.cards:
-                if card.rank != other.pairs[0]:
-                    B_highcards.append(card.rank)
-            for index in range(3):
-                if A_highcards[index] != B_highcards[index]:
-                    return A_highcards[index] < B_highcards[index]
+            if self.pairs[0] == other.pairs[0]:
 
+                def gen_pa_highranks(given_object):
+                    for card in given_object.cards:
+                        if card.rank != given_object.pairs[0]:
+                            yield card.rank
+                
+                s_hr = list(gen_pa_highranks(self))
+                o_hr = list(gen_pa_highranks(other))
+                   
+                for index in range(3):
+                    if s_hr[index] != o_hr[index]:
+                        return s_hr[index] < o_hr[index]
+                
+                return False
+            
+            return self.pairs[0] < other.pairs[0]
+        
         if self.value == 'Highcard':
             for index in range(5):
                 if self.cards[index].rank != other.cards[index].rank:
                     return self.cards[index].rank < other.cards[index].rank
-
+            
+            return False
+    
     def __le__(self, other):
         return self.__lt__(other) or self.__eq__(other)
-
+    
     def __gt__(self, other):
-        result = self.__eq__(other)
-        if result == NotImplemented:
-            return result        
-        if result:
-            return False
+        if not(isinstance(other, self.__class__)):
+            return NotImplemented
+        
+        # listed in descending order hence reversed comparison
         if self.value != other.value:
-            return values.index(self.value) > values.index(other.value)
-
+            return hand_values_data.index(self.value) < hand_values_data.index(other.value) 
+        
+        if self.value == 'Royal flush':
+            return False
+        
         if self.value == 'Straight flush':
             return self.sf_lead > other.sf_lead
-
+        
         if self.value == 'Four of a kind':
-            if self.fours[0] != other.fours[0]:
-                return self.fours[0] > other.fours[0]
-            A_highcards = []
-            for card in self.cards:
-                if card.rank != self.fours[0]:
-                    A_highcards.append(card.rank)
-            B_highcards =[]
-            for card in other.cards:
-                if card.rank != other.fours[0]:
-                    B_highcards.append(card.rank)
-            return A_highcards[0] > B_highcards[0]
+            if self.quads[0] == other.quads[0]:
 
+                def gen_qu_highranks(given_object):
+                    for card in given_object.cards:
+                        if card.rank != given_object.quads[0]:
+                            yield card.rank
+                
+                s_hr = list(gen_qu_highranks(self))
+                o_hr = list(gen_qu_highranks(other))
+
+                return s_hr[0] > o_hr[0]
+            
+            return self.quads[0] > other.quads[0]
+        
         if self.value == 'Full house':
-            if self.threes[0] != other.threes[0]:
-                return self.threes[0] > other.threes[0]
-            if len(self.threes) == 2:
-                A_fullof = self.threes[1]
-            else:
-                A_fullof = self.pairs[0]
-            if len(other.threes) == 2:
-                B_fullof = other.threes[1]
-            else:
-                B_fullof = other.pairs[0]
-            return A_fullof > B_fullof
+            if self.trips[0] == other.trips[0]:
+                
+                def get_fullof(given_object):
+                    if len(given_object.trips) == 2:
+                        return given_object.trips[1]
+                    return given_object.pairs[0]
+                
+                s_fullof = get_fullof(self)
+                o_fullof = get_fullof(other)
 
+                return s_fullof > o_fullof
+                        
+            return self.trips[0] > other.trips[0]
+        
         if self.value == 'Flush':
             for index in range(5):
-                if self.flush_ranks[index] != other.flush_ranks[index]:
-                    return self.flush_ranks[index] > other.flush_ranks[index]
-
+                if self.fcards[index].rank != other.fcards[index].rank:
+                    return self.fcards[index].rank > other.fcards[index].rank
+            
+            return False
+        
         if self.value == 'Straight':
             return self.straight_lead > other.straight_lead
-
+        
         if self.value == 'Three of a kind':
-            if self.threes[0] != other.threes[0]:
-                return self.threes[0] > other.threes[0]
-            A_highcards = []
-            for card in self.cards:
-                if card.rank != self.threes[0]:
-                    A_highcards.append(card.rank)
-            B_highcards =[]
-            for card in other.cards:
-                if card.rank != other.threes[0]:
-                    B_highcards.append(card.rank)
-            for index in range(2):
-                if A_highcards[index] != B_highcards[index]:
-                    return A_highcards[index] > B_highcards[index]
+            if self.trips[0] == other.trips[0]:
 
+                def gen_tr_highranks(given_object):
+                    for card in given_object.cards:
+                        if card.rank != given_object.trips[0]:
+                            yield card.rank
+                
+                s_hr = list(gen_tr_highranks(self))
+                o_hr = list(gen_tr_highranks(other))
+
+                for index in range(2):
+                    if s_hr[index] != o_hr[index]:
+                        return s_hr[index] > o_hr[index]
+                
+                return False
+            
+            return self.trips[0] > other.trips[0]
+        
         if self.value == 'Two pairs':
-            if self.pairs[0] != other.pairs[0]:
-                return self.pairs[0] > other.pairs[0]
-            if self.pairs[1] != other.pairs[1]:
+            if self.pairs[0] == other.pairs[0]:
+                if self.pairs[1] == other.pairs[1]:
+                
+                    def gen_tw_highranks(given_object):
+                        for card in given_object.cards:
+                            if card.rank != given_object.pairs[0] and card.rank != given_object.pairs[1]:
+                                yield card.rank
+                    
+                    s_hr = list(gen_tw_highranks(self))
+                    o_hr = list(gen_tw_highranks(other))
+
+                    return s_hr[0] > o_hr[0]
+            
                 return self.pairs[1] > other.pairs[1]
-            A_highcards = []
-            for card in self.cards:
-                if card.rank != self.pairs[0] and card.rank != self.pairs[1]:
-                    A_highcards.append(card.rank)
-            B_highcards =[]
-            for card in other.cards:
-                if card.rank != other.pairs[0] and card.rank != other.pairs[1]:
-                    B_highcards.append(card.rank)
-            return A_highcards[0] > B_highcards[0]
 
+            return self.pairs[0] > other.pairs[0]
+        
         if self.value == 'Pair':
-            if self.pairs[0] != other.pairs[0]:
-                return self.pairs[0] > other.pairs[0]
-            A_highcards = []
-            for card in self.cards:
-                if card.rank != self.pairs[0]:
-                    A_highcards.append(card.rank)
-            B_highcards =[]
-            for card in other.cards:
-                if card.rank != other.pairs[0]:
-                    B_highcards.append(card.rank)
-            for index in range(3):
-                if A_highcards[index] != B_highcards[index]:
-                    return A_highcards[index] > B_highcards[index]
+            if self.pairs[0] == other.pairs[0]:
 
+                def gen_pa_highranks(given_object):
+                    for card in given_object.cards:
+                        if card.rank != given_object.pairs[0]:
+                            yield card.rank
+                
+                s_hr = list(gen_pa_highranks(self))
+                o_hr = list(gen_pa_highranks(other))
+                   
+                for index in range(3):
+                    if s_hr[index] != o_hr[index]:
+                        return s_hr[index] > o_hr[index]
+                
+                return False
+            
+            return self.pairs[0] > other.pairs[0]
+        
         if self.value == 'Highcard':
             for index in range(5):
                 if self.cards[index].rank != other.cards[index].rank:
                     return self.cards[index].rank > other.cards[index].rank
+            
+            return False
     
     def __ge__(self, other):
         return self.__gt__(other) or self.__eq__(other)
-
+    
+    
+    # finds the hand value using tests
     def determine_value(self):
-        sf_test = self.test_straightflush()
-        if self.royal:
-            return 'Royal flush'
-        if sf_test:
+        self.suit_count = self.count_suits(self.cards)
+        
+        (sf_bool, sf_lead) = self.test_straightflush()
+        if sf_bool:
+            self.sf_lead = sf_lead
+            if self.sf_lead == ranks[0]:
+                return 'Royal flush'
             return 'Straight flush'
+        
+        self.rank_count = self.count_ranks(self.cards)
+        
         if self.test_fourofakind():
             return 'Four of a kind'
+        
         if self.test_fullhouse():
             return 'Full house'
+
         if self.flush:
             return 'Flush'
-        if self.test_straight():
+        
+        (straight_bool, straight_lead) = self.test_straight(self.cards)
+        if straight_bool:
+            self.straight_lead = straight_lead
             return 'Straight'
+        
         if self.threeofakind:
             return 'Three of a kind'
-        if self.twopairs:
+        
+        if self.test_twopairs():
             return 'Two pairs'
+        
         if self.pair:
             return 'Pair'
+        
         return 'Highcard'
+    
 
+    # low level tests for analysing hand; sub-trees to show testing order
+    # tree 1
     def test_straightflush(self):
-        self.royal = False
-        if self.test_flush():
-            self.flush_ranks = []
-            for card in self.cards:
-                if card.suit.value == self.flush_suit:
-                    self.flush_ranks.append(card.rank)
-            if self.flush_ranks[4] == Rank('T'):
-                self.royal = True
-                return True
-            for index in range(len(self.flush_ranks) - 4):
-                if ranks.index(self.flush_ranks[index].value) - ranks.index(self.flush_ranks[index + 4].value) == 4:
-                    self.sf_lead = Rank(self.flush_ranks[index].value)
-                    return True
-            if Rank('A') in self.flush_ranks and self.flush_ranks[len(self.flush_ranks) - 4] == Rank('5'):
-                self.sf_lead = Rank('5')
-                return True
-        return False
+        (self.flush, flush_suit) = self.test_flush()
 
+        if self.flush:
+            
+            def gen_fcards(fs, cards):
+                for card in cards:
+                    if card.suit == fs:
+                        yield card
+            
+            self.fcards = list(gen_fcards(flush_suit, self.cards))
+            return self.test_straight(self.fcards)
+
+        return False, None
+    
     def test_flush(self):
-        self.flush = False
-        suit_count = self.count_suits()
-        for suit in suit_count:
-            if suit_count[suit] >= 5:
-                self.flush = True
-                self.flush_suit = suit
-                return True
-        return False
-    
-    def count_suits(self):
-        suit_count = {}
-        for suit in suits:
-            suit_count[suit] = 0
-        for card in self.cards:
-            suit_count[card.suit.value] += 1
-        return suit_count
+        def gen_flush_suits(s_count):
+            for s in s_count:
+                if s_count[s] >= 5:
+                    yield s
+        
+        flush_suits = list(gen_flush_suits(self.suit_count))
 
-    def test_straight(self):
-        card_ranks_set = self.rank_cards_set()
-        for index in range(len(card_ranks_set) - 4):
-            if ranks.index(card_ranks_set[index].value) - ranks.index(card_ranks_set[index + 4].value) == 4:
-                self.straight = True
-                self.straight_lead = Rank(card_ranks_set[index].value)
-                return True
-        if Rank('A') in card_ranks_set and card_ranks_set[len(card_ranks_set) - 4] == Rank('5'):
-            self.straight = True
-            self.straight_lead = Rank('5')
-            return True
-        return False
+        if len(flush_suits) == 1:
+            return True, flush_suits[0]
+        
+        if len(flush_suits) > 1:
+            raise ValueError('ERROR: More than one flush not implemented.')
 
-    def rank_cards_set(self):
-        card_ranks_set = []
-        for card in self.cards:
-            if card.rank not in card_ranks_set:
-                card_ranks_set.append(card.rank)
-        return card_ranks_set
+        return False, None
     
+    def test_straight(self, cards):
+        distinct_ranks = self.find_distinct_ranks(cards)
+        
+        num_dis_ranks = len(distinct_ranks)
+        for index in range(num_dis_ranks - 4):
+            if distinct_ranks[index] - distinct_ranks[index + 4] == 4:
+                return True, distinct_ranks[index]
+
+        # checking for the 5-A straight since A is only high in code
+        if ranks[0] in distinct_ranks and distinct_ranks[num_dis_ranks - 4] == ranks[9]:
+            return True, ranks[9]
+
+        return False, None
+    
+    # tree 2
     def test_fourofakind(self):
-        if self.test_threeofakind():
-            self.fours = []
-            for rank in self.rank_count:
-                if self.rank_count[rank] >= 4:
-                    self.fours.append(Rank(rank))
-                    self.fours.sort(reverse = True)
-            if len(self.fours) >= 1:
-                return True
+        self.quads = list(self.gen_n_counts(self.rank_count, 4))
+
+        if len(self.quads) >= 1:
+            return True
+        
         return False
     
     def test_fullhouse(self):
-        if self.test_twopairs():
-            if self.threeofakind:
-                return True
+        self.threeofakind = self.test_threeofakind()
+        self.pair = self.test_pair()
+
+        if self.threeofakind and self.pair:
+            return True
+        
+        elif len(self.trips) == 2:
+            return True
+
         return False
-    
+
     def test_threeofakind(self):
-        self.threeofakind = False
-        if self.test_pair():
-            self.threes = []
-            for rank in self.rank_count:
-                if self.rank_count[rank] >= 3:
-                    self.threes.append(Rank(rank))
-                    self.threes.sort(reverse = True)
-            if len(self.threes) >= 1:
-                self.threeofakind = True
-                return True
-        return False
-    
-    def test_twopairs(self):
-        self.twopairs = False
-        if self.pair:
-            if len(self.pairs) >= 2:
-                self.twopairs = True
-                return True
+        self.trips = list(self.gen_n_counts(self.rank_count, 3))
+
+        if len(self.trips) >= 1:
+            return True
+        
         return False
     
     def test_pair(self):
-        self.pair = False
-        self.rank_count = self.count_ranks()
-        self.pairs = []
-        for rank in self.rank_count:
-            if self.rank_count[rank] >= 2:
-                self.pairs.append(Rank(rank))
-        self.pairs.sort(reverse = True)
+        self.pairs = list(self.gen_n_counts(self.rank_count, 2))
+
         if len(self.pairs) >= 1:
-            self.pair = True
             return True
+        
         return False
 
-    def count_ranks(self):
+    def test_twopairs(self):
+        if len(self.pairs) >= 2:
+            return True
+        
+        return False
+
+
+    # basic methods for gathering stats
+    def count_suits(self, cards):
+        suit_count = {}
+        
+        for suit in suits:
+            suit_count[suit] = 0
+
+        for card in cards:
+            suit_count[card.suit] += 1
+        
+        return suit_count
+
+    def count_ranks(self, cards):
         rank_count = {}
+        
         for rank in ranks:
             rank_count[rank] = 0
-        for card in self.cards:
-            rank_count[card.rank.value] += 1
+
+        for card in cards:
+            rank_count[card.rank] += 1
+        
         return rank_count
+    
+    def find_distinct_ranks(self, cards):
+        def gen_dis_ranks(r_count):
+            for r in r_count:
+                if r_count[r] >= 1:
+                    yield r
+        
+        return list(gen_dis_ranks(self.count_ranks(cards)))
+    
+    def gen_n_counts(self, r_count, n):
+        for r in r_count:
+                if r_count[r] == n:
+                    yield r
