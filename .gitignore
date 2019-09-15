@@ -104,4 +104,4 @@ venv.bak/
 .mypy_cache/
 
 # xlsx sheets written by program
-.xlsx
+*.xlsx
