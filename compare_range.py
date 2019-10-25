@@ -20,7 +20,7 @@ def range_comparison(IP_range, OOP_range, board):
     num = len(results)
     
     if num == 0:
-        return (0,0)
+        return NotImplemented
         
     cumulative_result = [0,0]
     for (eq1, eq2) in results:

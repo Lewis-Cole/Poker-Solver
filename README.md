@@ -16,3 +16,5 @@
 # 9. holding_range.py
 # 10. compare_range.py
 # 11. read_range.py
+# 12. equity_distribution.py
+# 13. graph_data.py

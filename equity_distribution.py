@@ -1,6 +1,6 @@
-# --------------------------------------------------------
-#   This file contains functions for comparing ranges
-# --------------------------------------------------------
+# ----------------------------------------------------------------------------------------
+#   This file contains a function for giving the equity distribution data for a range
+# ----------------------------------------------------------------------------------------
 
 # import here
 from holding_range import Holding_Range
@@ -14,6 +14,9 @@ def equity_data(IP_range, OOP_range, board):
         for holding in IP_r.holdings:
             IP_sr = Holding_Range([holding])
             result = range_comparison(IP_sr, OOP_r, boa)
+
+            if result == NotImplemented:
+                continue
 
             yield holding, result[0]
 

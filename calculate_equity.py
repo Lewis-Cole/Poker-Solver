@@ -30,9 +30,6 @@ def eq_enumeration(IP_holding, OOP_holding, board):
             OOP_wins += 0.5
         
         total_runs = IP_wins + OOP_wins
-
-        if total_runs == 0:
-            return 0, 0
             
         IP_EQ = round(100 * IP_wins / total_runs, 2)
         OOP_EQ = round(100 * OOP_wins / total_runs, 2)
@@ -54,9 +51,6 @@ def eq_enumeration(IP_holding, OOP_holding, board):
                 OOP_wins += 0.5
 
         total_runs = IP_wins + OOP_wins
-
-        if total_runs == 0:
-            return 0, 0
 
         IP_EQ = round(100 * IP_wins / total_runs, 2)
         OOP_EQ = round(100 * OOP_wins / total_runs, 2)
@@ -80,9 +74,6 @@ def eq_enumeration(IP_holding, OOP_holding, board):
                     OOP_wins += 0.5
 
         total_runs = IP_wins + OOP_wins
-
-        if total_runs == 0:
-            return 0, 0
 
         IP_EQ = round(100 * IP_wins / total_runs, 2)
         OOP_EQ = round(100 * OOP_wins / total_runs, 2)
@@ -109,9 +100,6 @@ def eq_enumeration(IP_holding, OOP_holding, board):
                                 OOP_wins += 0.5
 
         total_runs = IP_wins + OOP_wins
-
-        if total_runs == 0:
-            return 0, 0
         
         IP_EQ = round(100 * IP_wins / total_runs, 2)
         OOP_EQ = round(100 * OOP_wins / total_runs, 2)
