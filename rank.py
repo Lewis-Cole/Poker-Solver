@@ -63,3 +63,10 @@ def data_to_rank(data):
         yield Rank(value)
 
 ranks = list(data_to_rank(ranks_data))
+
+
+# empty rank dictionary
+empty_rank_count = {}
+        
+for rank in ranks:
+    empty_rank_count[rank] = 0

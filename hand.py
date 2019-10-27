@@ -5,8 +5,9 @@
 # import hand values, etc.
 from rules import hand_values_data
 from card import Card
-from rank import ranks
-from suit import suits
+from rank import ranks, empty_rank_count
+from suit import suits, empty_suit_count
+import copy
 
 # create and specify the class
 class Hand:
@@ -17,7 +18,9 @@ class Hand:
             raise ValueError('ERROR: Invalid hand input.')
         
         self.cards.sort(reverse = True)
-        self.value = self.determine_value()
+
+        self.suit_count = self.count_suits(self.cards)
+        self.rank_count = self.count_ranks(self.cards)
 
     def validate_hand(self):
         return not any(not(isinstance(card, Card)) for card in self.cards)
@@ -25,6 +28,17 @@ class Hand:
     def __repr__(self):
         return str(self.cards)
     
+    def add_card(self, card):
+        self.cards.append(card)
+        if not(self.validate_hand()):
+            raise ValueError('ERROR: Invalid card added.')
+
+        self.cards.sort(reverse = True)
+
+        self.suit_count[card.suit] += 1
+        self.rank_count[card.rank] += 1
+    
+
     # overwriting comparison methods
     def __eq__(self, other):
         if not(isinstance(other, self.__class__)):
@@ -387,42 +401,48 @@ class Hand:
     
     
     # finds the hand value using tests
-    def determine_value(self):
-        self.suit_count = self.count_suits(self.cards)
-        
+    def determine_value(self):     
         (sf_bool, sf_lead) = self.test_straightflush()
         if sf_bool:
             self.sf_lead = sf_lead
             if self.sf_lead == ranks[0]:
-                return 'Royal flush'
-            return 'Straight flush'
-        
-        self.rank_count = self.count_ranks(self.cards)
+                self.value = 'Royal flush'
+                return
+            self.value = 'Straight flush'
+            return
         
         if self.test_fourofakind():
-            return 'Four of a kind'
+            self.value = 'Four of a kind'
+            return
         
         if self.test_fullhouse():
-            return 'Full house'
+            self.value = 'Full house'
+            return
 
         if self.flush:
-            return 'Flush'
+            self.value = 'Flush'
+            return
         
         (straight_bool, straight_lead) = self.test_straight(self.cards)
         if straight_bool:
             self.straight_lead = straight_lead
-            return 'Straight'
+            self.value = 'Straight'
+            return
         
         if self.threeofakind:
-            return 'Three of a kind'
+            self.value = 'Three of a kind'
+            return
         
         if self.test_twopairs():
-            return 'Two pairs'
+            self.value = 'Two pairs'
+            return
         
         if self.pair:
-            return 'Pair'
+            self.value = 'Pair'
+            return
         
-        return 'Highcard'
+        self.value = 'Highcard'
+        return
     
 
     # low level tests for analysing hand; sub-trees to show testing order
@@ -518,21 +538,15 @@ class Hand:
 
     # basic methods for gathering stats
     def count_suits(self, cards):
-        suit_count = {}
+        suit_count = copy.copy(empty_suit_count)
         
-        for suit in suits:
-            suit_count[suit] = 0
-
         for card in cards:
             suit_count[card.suit] += 1
         
         return suit_count
 
     def count_ranks(self, cards):
-        rank_count = {}
-        
-        for rank in ranks:
-            rank_count[rank] = 0
+        rank_count = copy.copy(empty_rank_count)
 
         for card in cards:
             rank_count[card.rank] += 1

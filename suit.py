@@ -58,3 +58,10 @@ def data_to_suit(data):
         yield Suit(value)
 
 suits = list(data_to_suit(suits_data))
+
+
+# empty suit dictionary
+empty_suit_count = {}
+        
+for suit in suits:
+    empty_suit_count[suit] = 0

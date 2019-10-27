@@ -21,6 +21,9 @@ def eq_enumeration(IP_holding, OOP_holding, board):
         IP_hand = Hand(IP_holding.cards + board)
         OOP_hand = Hand(OOP_holding.cards + board)
 
+        IP_hand.determine_value()
+        OOP_hand.determine_value()
+
         if IP_hand > OOP_hand:
             IP_wins += 1
         elif OOP_hand > IP_hand:
@@ -41,6 +44,9 @@ def eq_enumeration(IP_holding, OOP_holding, board):
             final_board = board + [card]
             IP_hand = Hand(IP_holding.cards + final_board)
             OOP_hand = Hand(OOP_holding.cards + final_board)
+
+            IP_hand.determine_value()
+            OOP_hand.determine_value()
 
             if IP_hand > OOP_hand:
                 IP_wins += 1
@@ -64,6 +70,9 @@ def eq_enumeration(IP_holding, OOP_holding, board):
                 final_board = board + [deck.cards[index1], deck.cards[index2]]
                 IP_hand = Hand(IP_holding.cards + final_board)
                 OOP_hand = Hand(OOP_holding.cards + final_board)
+
+                IP_hand.determine_value()
+                OOP_hand.determine_value()
 
                 if IP_hand > OOP_hand:
                     IP_wins += 1
@@ -90,6 +99,9 @@ def eq_enumeration(IP_holding, OOP_holding, board):
                             final_board = [deck.cards[index1], deck.cards[index2], deck.cards[index3], deck.cards[index4], deck.cards[index5]]
                             IP_hand = Hand(IP_holding.cards + final_board)
                             OOP_hand = Hand(OOP_holding.cards + final_board)
+
+                            IP_hand.determine_value()
+                            OOP_hand.determine_value()
 
                             if IP_hand > OOP_hand:
                                 IP_wins += 1
