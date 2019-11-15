@@ -1,3 +1,8 @@
+# Specific files
+flameprof.py
+test.prof
+test-flamegraph.svg
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
