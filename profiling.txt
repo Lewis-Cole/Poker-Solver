@@ -1,0 +1,2 @@
+# 1. python -m cProfile -o myscript.prof myscript.py
+# 2. python flameprof.py test.prof > test-flamegraph.svg

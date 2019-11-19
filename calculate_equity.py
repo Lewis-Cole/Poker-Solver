@@ -9,7 +9,7 @@ from deck import deck
 
 # method of enumerating every possible branch
 def eq_enumeration(IP_holding, OOP_holding, board):
-    deck.replenish()    
+    deck.replenish()
     dead_cards = IP_holding.cards + OOP_holding.cards + board
     deck.remove(dead_cards)
     cards_to_deal = 5 - len(board)
@@ -31,9 +31,9 @@ def eq_enumeration(IP_holding, OOP_holding, board):
         elif IP_hand == OOP_hand:
             IP_wins += 0.5
             OOP_wins += 0.5
-        
+
         total_runs = IP_wins + OOP_wins
-            
+
         IP_EQ = round(100 * IP_wins / total_runs, 2)
         OOP_EQ = round(100 * OOP_wins / total_runs, 2)
 
@@ -60,9 +60,9 @@ def eq_enumeration(IP_holding, OOP_holding, board):
 
         IP_EQ = round(100 * IP_wins / total_runs, 2)
         OOP_EQ = round(100 * OOP_wins / total_runs, 2)
-        
+
         return IP_EQ, OOP_EQ
-    
+
     if cards_to_deal == 2:
         num_deck = len(deck.cards)
         for index1 in range(num_deck - 1):
@@ -86,9 +86,9 @@ def eq_enumeration(IP_holding, OOP_holding, board):
 
         IP_EQ = round(100 * IP_wins / total_runs, 2)
         OOP_EQ = round(100 * OOP_wins / total_runs, 2)
-        
+
         return IP_EQ, OOP_EQ
-    
+
     if cards_to_deal == 5:
         num_deck = len(deck.cards)
         for index1 in range(num_deck - 4):
@@ -96,7 +96,13 @@ def eq_enumeration(IP_holding, OOP_holding, board):
                 for index3 in range(index2 + 1, num_deck - 2):
                     for index4 in range(index3 + 1, num_deck - 1):
                         for index5 in range(index4 + 1, num_deck):
-                            final_board = [deck.cards[index1], deck.cards[index2], deck.cards[index3], deck.cards[index4], deck.cards[index5]]
+                            final_board = [
+                                deck.cards[index1],
+                                deck.cards[index2],
+                                deck.cards[index3],
+                                deck.cards[index4],
+                                deck.cards[index5],
+                            ]
                             IP_hand = Hand(IP_holding.cards + final_board)
                             OOP_hand = Hand(OOP_holding.cards + final_board)
 
@@ -112,8 +118,8 @@ def eq_enumeration(IP_holding, OOP_holding, board):
                                 OOP_wins += 0.5
 
         total_runs = IP_wins + OOP_wins
-        
+
         IP_EQ = round(100 * IP_wins / total_runs, 2)
         OOP_EQ = round(100 * OOP_wins / total_runs, 2)
-        
+
         return IP_EQ, OOP_EQ
