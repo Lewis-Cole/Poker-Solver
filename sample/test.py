@@ -32,5 +32,3 @@ print(
         "9s8s",
     ]
 )
-
-print(parse_range("QQ+,AKs,JTs,AhQh,AKo"))

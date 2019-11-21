@@ -3,9 +3,7 @@
 
 from itertools import combinations as combos
 from itertools import chain
-
-ranks = ["2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A"]
-suits = ["c", "d", "h", "s"]
+from rules import ranks, suits
 
 
 def parse_board(board_text: str) -> list:

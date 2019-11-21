@@ -7,7 +7,7 @@ with open("LICENSE") as f:
     license_text = f.read()
 
 setuptools.setup(
-    name="Poker-Solver-Lewis-Cole",  # Replace with your own username
+    name="Poker-Solver-Lewis-Cole",
     version="0.0.1",
     author="Lewis Cole",
     author_email="lcole.mail@gmail.com",

@@ -23,7 +23,7 @@ Output:
         - split range into segments of similar holdings
         - Parse each segment into individual holdings
         - transform text holdings into objects
-        - group as 'Range': object / list
+        - group as 'range': list
 
 - Find an individual IP holding's equity vs OOP range
     - take one holdings from OOP range
