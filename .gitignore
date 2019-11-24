@@ -24,3 +24,8 @@ wheels/
 .installed.cfg
 *.egg
 MANIFEST
+
+# Flamegraph / profiling
+flameprof.py
+*.prof
+*.svg
