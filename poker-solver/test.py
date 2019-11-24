@@ -4,7 +4,7 @@
 from .parse import parse_board, parse_range
 from .hand import Hand
 from .comparison import compare_holdings, compare_ranges
-from .graphing import plot_graph
+from .graph import plot_graph
 
 
 # print("---")

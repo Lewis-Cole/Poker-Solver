@@ -67,5 +67,5 @@ comparison.py
         - compare_holdings
             - determine equity between two holdings on possible runouts
 
-graph_data.py
+graph.py
     - covert raw data into either excel spreadsheet, historgram or density plot
