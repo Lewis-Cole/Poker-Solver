@@ -444,27 +444,35 @@ class Hand:
             return hand_values[8]
 
         if self.test_fourofakind():
+            # Four of a kind
             return hand_values[7]
 
         if self.test_fullhouse():
+            # Full house
             return hand_values[6]
 
         if self.flush:
+            # Flush
             return hand_values[5]
 
         (straight_bool, self.straight_lead) = self.test_straight(self.cards)
         if straight_bool:
+            # Straight
             return hand_values[4]
 
         if self.threeofakind:
+            # Three of a kind
             return hand_values[3]
 
         if self.test_twopairs():
+            # Two pairs
             return hand_values[2]
 
         if self.pair:
+            # Pair
             return hand_values[1]
 
+        # Highcard
         return hand_values[0]
 
     # Testing tree 1
