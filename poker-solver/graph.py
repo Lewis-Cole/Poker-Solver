@@ -28,3 +28,5 @@ def plot_graph(
     filepath = "".join(["graphs/", filename, ".png"])
 
     matplotlib.pyplot.savefig(filepath)
+
+    matplotlib.pyplot.close()
