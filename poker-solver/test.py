@@ -1,9 +1,9 @@
 """Tests other modules."""
 
 
-from .parse import parse_board, parse_range
-from .hand import Hand
-from .comparison import compare_holdings, compare_ranges
+# from .parse import parse_board, parse_range
+# from .hand import Hand
+# from .comparison import compare_holdings, compare_ranges
 from .graph import plot_graph
 
 
@@ -121,4 +121,9 @@ from .graph import plot_graph
 
 print("---")
 
-plot_graph("QQ+,AKs", "JJ-99,98s", "Qd9d2s")
+plot_graph(
+    "22+,A2s+,K9s+,QTs+,J9s+,T9s,98s,87s,76s,ATo+,KJo+",
+    "TT-22,ATs-A2s,KJs-K5s,QTs-Q8s,J8s+,T8s+,97s+,86s+,75s+,64s+,54s,AQo-ATo,KJo+",
+    "Kh8s4c",
+    "test_graph",
+)

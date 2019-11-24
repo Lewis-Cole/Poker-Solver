@@ -7,7 +7,9 @@ from .parse import parse_board, parse_range
 from .comparison import compare_ranges
 
 
-def plot_graph(IP_range_text: str, OOP_range_text: str, board_text: str):
+def plot_graph(
+    IP_range_text: str, OOP_range_text: str, board_text: str, filename: str = "graph"
+):
     """Plot equity graph for IP range"""
     # parsing text
     IP_range = parse_range(IP_range_text)
@@ -22,3 +24,7 @@ def plot_graph(IP_range_text: str, OOP_range_text: str, board_text: str):
     matplotlib.pyplot.hist(
         equity_data, bins=[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100,],
     )
+
+    filepath = "".join(["graphs/", filename, ".png"])
+
+    matplotlib.pyplot.savefig(filepath)
