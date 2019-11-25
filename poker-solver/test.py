@@ -113,19 +113,15 @@ from .graph import plot_graph
 
 # print("---")
 
-# plot_graph(
-#     "22+,A2s+,K9s+,Q9s+,J9s+,T9s,98s,87s,ATo+,KJo+",
-#     "TT-22,ATs-A2s,KJs-K6s,Q8s+,J8s+,T8s+,97s+,86s+,75s+,65s,54s,AQo-AJo,KQo",
-#     "9h6hQc",
-# )
+# plot_graph("JJ+","TT-99","4h6h8c")
 
-IP_range = "22+,A2s+,K9s+,QTs+,J9s+,T9s,98s,87s,76s,ATo+,KJo+"
-OOP_range = "TT-22,ATs-A2s,KJs-K5s,QTs-Q8s,J8s+,T8s+,97s+,86s+,75s+,64s+,54s,AQo-ATo,KJo+"
+EP_range = "22+,A2s+,K9s+,QTs+,J9s+,T9s,98s,87s,76s,ATo+,KJo+"
+BB_range = "TT-22,ATs-A2s,KJs-K5s,QTs-Q8s,J8s+,T8s+,97s+,86s+,75s+,64s+,54s,AQo-ATo,KJo+"
 board_list = ["As7h2d","AsKh4d","Ks2h2d","KsTh9d","JhTh9d"]
 
 for board in board_list:
-    filename_1 = "".join(["EPvsBB/graph_", board, "_IP"])
-    plot_graph(IP_range, OOP_range, board, filename_1)
+    filename_1 = "".join(["EPvsBB/", board, "_EP"])
+    plot_graph(EP_range, BB_range, board, filename_1)
 
-    filename_2 = "".join(["EPvsBB/graph_", board, "_OOP"])
-    plot_graph(OOP_range, IP_range, board, filename_2)
+    filename_2 = "".join(["EPvsBB/", board, "_BB"])
+    plot_graph(BB_range, EP_range, board, filename_2)

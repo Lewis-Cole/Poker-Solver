@@ -30,5 +30,6 @@ flameprof.py
 *.prof
 *.svg
 
-# graphs
+# graphs and spreadsheets
 graphs/
+spreadsheets/
