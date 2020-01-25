@@ -1,7 +1,13 @@
 """Define the Hand class."""
 
 
+import json
+
 from .rules import ranks, suits, hand_values
+
+
+with open("poker_solver/data_file.json", "r") as read_file:
+    straight_data = json.load(read_file)
 
 
 class Hand:
@@ -497,25 +503,8 @@ class Hand:
 
     def test_straight(self, cards) -> (bool, str):
         """Return bool of if straight and lead card"""
-        ranks_in_hand = [card[0] for card in cards]
-        straight_ranks = ["A"] + list(ranks)
-
-        count = 0
-        made_straight = False
-        for rank in straight_ranks:
-            if rank in ranks_in_hand:
-                last_rank = rank
-                count += 1
-            else:
-                if made_straight == True:
-                    return (True, last_rank)
-                count = 0
-            if count == 5:
-                made_straight = True
-        if made_straight == True:
-            return (True, last_rank)
-
-        return (False, None)
+        ranks_in_hand = sorted(set([card[0] for card in cards]))
+        return straight_data[str(ranks_in_hand)]
 
     # Tree 2
     def test_fourofakind(self) -> bool:

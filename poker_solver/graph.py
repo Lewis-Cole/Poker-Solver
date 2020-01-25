@@ -9,7 +9,10 @@ from .comparison import compare_ranges
 
 
 def plot_graph(
-    IP_range_text: str, OOP_range_text: str, board_text: str, filename: str = "default_name"
+    IP_range_text: str,
+    OOP_range_text: str,
+    board_text: str,
+    filename: str = "default_name",
 ):
     """Plot equity graph for IP range"""
     # parsing text
@@ -32,7 +35,7 @@ def plot_graph(
         worksheet.write(row, column, holding)
         worksheet.write(row, column + 1, equity)
         row += 1
-    
+
     workbook.close()
 
     # make and save graph
@@ -41,7 +44,7 @@ def plot_graph(
     matplotlib.pyplot.hist(
         equity_data, bins=[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100,],
     )
-    matplotlib.pyplot.axis([0,100,0,150])
+    matplotlib.pyplot.axis([0, 100, 0, 150])
 
     graph_filepath = "".join(["graphs/", filename, ".png"])
     matplotlib.pyplot.savefig(graph_filepath)
